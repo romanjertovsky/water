@@ -1,0 +1,181 @@
+Table, Button (+Modal), Form, Paginator
+
+
+=== Общие методы из родительского класса FormCommon:
+
+Табуляции перед всем кодом:
+Устанавливается:
+$o->setITabs(2);
+Вызывается так:
+$this->tab();
+
+Окно подтверждения с сообщением. Устанавливается на кнопки и на формы.
+$o->setSConfirmMsg('Вы уверены?');
+
+
+=== Генерация таблицы
+
+== Создаём таблицу, указав имя таблицы в базе данных:
+
+Первый способ:
+$oTable = new Table('users');
+
+Второй способ:
+$oTable = new Table();
+$oTable->setSTable('users')
+
+
+== Заполняем параметры таблицы, * - не обязательные настройки
+
+Шапка таблицы. Кол-во заголовков должно быть равно кол-ву запрашиваемых полей
+*$oTable->setAThead(['id',          'Login',        'ФИО'])
+
+Установка способов редактирования строк.
+Параметры: (Имя поля-идентификатора, кнопка редактировать, кнопка удалить)
+Если активирована кнопка удалить, то вся таблица помещается в <form action="" method="post">
+а каждая кнопка "удалить" имеет тип submit name="$idName" и value="$id"
+*$oTable->setEdit('user_id', true, true)
+
+
+== Вывод кода таблицы:
+print $oTable->makeTable();
+
+
+
+=== Генерация кнопки
+
+== Создаём кнопку, первый способ:
+$oButton = new Button('name_and_identificator', 'button', 'Сохранить', 'red');
+
+== Создаём кнопку, второй способ:
+$oButton = new Button();
+
+== Заполняем (меняем) параметры кнопки
+
+#id
+$oButton->setSId('htmlIdentificator');
+
+Тип button или submit:
+$oButton->setSType('button');
+
+Подпись:
+$oButton->setSCaption('Сохранить');
+
+Цвет blue, red, gray:
+$oButton->setSColor('red');
+
+Если это ссылка, которая выглядит как кнопка то href:
+*$oButton->setSHref('http://test.url/') - по умолчанию в конструкторе не принимается
+
+Ключ для post-запроса
+$oButton->setSName('post_name');
+
+Значение для пост-запроса <button value="">
+$oButton->setSValue('544')
+
+
+== Вызываем так:
+
+Выводит код кнопки:
+print $oButton->makeButton();
+
+Выводит код ссылки, выглядящей как кнопка (должен быть выполнен $oButton->setSHref()):
+print $oButton->makeLink();
+
+Выводит код кнопки с параметрами для модального окна к ней:
+print $oButton->makeButtonForModal();
+
+Помещает код модального окна для этой кнопки во View:
+Core::getView()->addModal(
+    $oButton->makeModalForButton('Заголовок', 'Содержимое всплывающего окна', $oOkButt->makeButton(), 1)
+);
+Код модального окна следует помещать в Core::getView()->addModal(), как в примере.
+
+
+=== Генерация формы
+
+== Создаём форму
+
+$oForm = new Form();
+Из-за длинных массивов, ухудщающих читаемость, конструктора,
+принимающего параметры не имеет.
+
+
+== Заполняем параметры полей формы
+
+Идентификаторы и имена полей.
+Данные идентификаторы попадают в id и name подписей и полей ввода:
+$oForm->setANames(['user_id',  'user_login',   'common_name']);
+
+$oForm->setATypes(['text',      'date',         'select']);
+Типы полей
+  readonly
+  text
+  date
+  password
+  email
+  select
+
+Подписи полей:
+$oForm->setALabels(['ID',   'Логин:',       'ФИО:']);
+
+Значения:
+*$oForm->setAValues(['1',    'username',     'Фамилия Имя Отчество']);
+
+Плейсхолдеры:
+*$oForm->setAPlaceholders(['ID', 'Login',        'ФИО']);
+
+Кнопка удалить:
+*$oForm->setBDelete(true);
+
+Тексты подтверждения:
+*$oForm->setSSubmitConfirm('Сохранить?');
+*$oForm->setSDeleteConfirm('Удалить?');
+
+Имя и подпись кнопки "Сохранить":
+*$oForm->setSSubmitName('go_save');
+*$oForm->setSSubmitCaption('Сохранить');
+
+
+
+
+== <select>/<option>
+Если в форме есть эти элементы то перед вызовом make..Form()
+заполняем их двумерным массивом [[value, Подпись], ['2', 'val 2']...
+Несколько раз, если <select>-ов несколько:
+
+$oForm->addSelect([['1', 'val 1'], ['2', 'val 2'], ['33', 'val 33']]);
+
+$oForm->addOptions(
+    Core::getDb()->makeDirectory(
+            'users',
+            'user_id',
+            'user_login',
+            ['user_id' => 2]
+        );
+);
+
+Генерирует код вертикальной формы, параметры - кол-во колонок для подписи и для поля соотв.,
+колонка = 1/12 экрана:
+print $oForm->makeVerticalForm(2, 3);
+
+Генерирует код горизонтальной формы, параметр - кол-во колонок каждого поля
+колонка = 1/12 экрана:
+print  $oForm->makeHorizontalForm(2);
+
+
+
+
+=== Генерация пагинатора
+$oPaginator = new Paginator(50, 3);
+Параметры 50 строк (!) 3-я страница активна.
+Кол-во строк на страницу указано в PAGE_SIZE в глобальных переменных,
+деление происходит в конструкторе пагинатора.
+
+Имеет смысл делать так:
+$oPaginator = new Paginator($oQuery->getCount(), $this->iPageNo);
+Где $oQuery объект queryBuilder, а $this->iPageNo - номер вызываемой страницы,
+объявленный в ModuleCommon в самом начале.
+
+Предварительно запрос нужно делать так:
+$oQuery->makeSelectPaginated($this->iPageNo);

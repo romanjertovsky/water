@@ -1,0 +1,10 @@
+.test{border: 1px solid #bbff00;}
+
+body, table, td, th, .page-link {
+    color: #87939a;
+    background-color: #2b2b2c;
+}
+
+.main-menu {
+    background-color: #3d3f42;
+}
