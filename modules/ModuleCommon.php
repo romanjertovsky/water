@@ -23,7 +23,7 @@ class ModuleCommon implements iModules
      * */
 
 
-    private $aModuleParams;
+    private $aModuleParams = [''];
     protected $iPageNo = 1;
 
 
@@ -152,7 +152,7 @@ class ModuleCommon implements iModules
 
         }
 
-        return implode($aResult, $sGlue);
+        return implode($sGlue, $aResult);
 
     }
 

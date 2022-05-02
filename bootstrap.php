@@ -8,6 +8,11 @@
     mb_regex_encoding('UTF-8');
     header('Content-Type: text/html; charset=utf-8');
 
+    if(IS_DEBUG === true)
+        error_reporting(E_ALL);
+    else
+        error_reporting(0);
+
     require_once 'iModules.php';
 
     spl_autoload_register(function ($sClassName){

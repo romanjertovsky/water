@@ -58,7 +58,7 @@ class Controller
 
         if(IS_DEBUG) if(IS_DEBUG) Core::getView()->debug("
         Controller()->appStart(): вызван модуль {$this->sModName}
-        с параметрами: [" . implode($this->aModParams, ', ') . ']');
+        с параметрами: [" . implode(', ', $this->aModParams) . ']');
 
 
         // вызов логики модуля

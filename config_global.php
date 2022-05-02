@@ -27,7 +27,7 @@
     define('URL_CSS', URL_HOME . 'css' . '/');
     define('URL_JS',  URL_HOME . 'js' . '/');
 
-    define('IS_DEBUG', 0);
+    define('IS_DEBUG', true);
     define('PAGE_SIZE', 10);     // элементов на страницу, при многостраничном выводе
 
     define('CLOSED_FOR_SERVICE', 0);     // Сайт закрыт на обновление
